@@ -1,0 +1,22 @@
+django==3.2
+djangorestframework==3.12.4
+django-filter==2.4.0
+djangorestframework-filters==1.0.0.dev0
+djangorestframework-jwt==1.11.0
+drf-extensions==0.7.1
+drf-tracking==1.5.0
+django-cors-headers==3.1.0
+django-storages==1.14.1
+psycopg2-binary==2.9.8
+boxsdk==3.8.1
+pvlib==0.10.2
+cryptography==41.0.4
+openpyxl==3.0.7
+whitenoise==6.5.0
+python-magic==0.4.27
+azure-core==1.29.4
+django-utils-six==2.0
+azure-storage-blob==12.18.2 # for azure storage account
+azure-common
+gunicorn==20.1.0
+numpy==1.26.2
