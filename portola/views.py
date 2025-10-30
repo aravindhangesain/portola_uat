@@ -614,7 +614,7 @@ class EntityViewSet(LoggingMixin, viewsets.ModelViewSet):
             if not ids:
                 return Response({"detail": "Please provide entity IDs via ?ids=42,45"}, status=400)
             entity_ids = [int(i) for i in ids.split(',') if i.isdigit()]
-            approver_ids = Project.objects.filter(customer_id__in=entity_ids).values_list('document_approver_id', flat=True).distinct()
+            approver_ids = ProjectEntity.objects.filter(customer_id__in=entity_ids).values_list('document_approver_id', flat=True).distinct()
             users = User.objects.filter(id__in=approver_ids)
             serializer = DocumentApproverSerializer(users, many=True, context={'request': request})
             return Response(serializer.data, status=status.HTTP_200_OK)
