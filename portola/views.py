@@ -1273,6 +1273,22 @@ class DocumentTemplateViewSet(viewsets.ModelViewSet):
 class ProjectTemplateViewSet(viewsets.ModelViewSet):
     queryset=ProjectTemplate.objects.all()
     serializer_class=ProjectTemplateSerializer
+    
+    def perform_create(self, serializer):
+        instance = serializer.save()
+        document_approver_id = instance.document_approver.id
+        customers = self.request.data.get('customer', []) 
+        customer_ids = [
+        url.rstrip('/').split('/')[-1] for url in customers]
+        for customer_id in customer_ids:
+            try:
+                ProjectEntityTemplate.objects.create(
+                    projecttemplate_id=instance.id,
+                    customer_id=int(customer_id),
+                    document_approver_id=document_approver_id,
+                )
+            except Exception as e:
+                print("Error creating ProjectEntity:", e)
 
 class EntityTemplateViewSet(viewsets.ModelViewSet):
     queryset=EntityTemplate.objects.all()
