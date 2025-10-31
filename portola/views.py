@@ -607,7 +607,7 @@ class EntityViewSet(LoggingMixin, viewsets.ModelViewSet):
             result = result.filter(type__in=['PVEL','PARTNER','CLIENT'])
         return result
     
-    @action(detail=False, methods=['get'])
+    @action(detail=False, methods=['get'],serializer_class=DocumentApproverSerializer,)
     def get_users(self, request, pk=None):
         try:
             ids = request.query_params.get('ids')
