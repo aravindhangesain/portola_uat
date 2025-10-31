@@ -860,11 +860,10 @@ class ProjectViewSet(DetailSerializerMixin, LoggingMixin, viewsets.ModelViewSet)
     def perform_create(self, serializer):
         instance = serializer.save()
         document_approver_id = instance.document_approver.id
-        customers = self.request.data.get('customer', []) 
-        customer_ids = [
-        url.rstrip('/').split('/')[-1] for url in customers]
-        print("Customer IDs:", customer_ids) 
-        for customer_id in customer_ids:
+        customers = self.request.data.getlist('customer')
+        customer_ids = [url.rstrip('/').split('/')[-1] for url in customers]
+        print("Customer IDs:", customer_ids)
+        for customer_id in set(customer_ids):
             try:
                 ProjectEntity.objects.create(
                     project_id=instance.id,
@@ -1290,11 +1289,10 @@ class ProjectTemplateViewSet(viewsets.ModelViewSet):
     def perform_create(self, serializer):
         instance = serializer.save()
         document_approver_id = instance.document_approver.id
-        customers = self.request.data.get('customer', []) 
-        customer_ids = [
-        url.rstrip('/').split('/')[-1] for url in customers]
+        customers = self.request.data.getlist('customer')
+        customer_ids = [url.rstrip('/').split('/')[-1] for url in customers]
         print("CUSTOMER IDS:", customer_ids)
-        for customer_id in customer_ids:
+        for customer_id in set(customer_ids):
             try:
                 ProjectEntityTemplate.objects.create(
                     projecttemplate_id=instance.id,

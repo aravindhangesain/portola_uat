@@ -457,8 +457,8 @@ class ProjectTemplate(models.Model):
     contract_signature = models.DateField(null=True, blank=False)
     # TODO: This is not a real database field. It's calculated by the serializer. REMOVEME
     last_document_date = models.DateField(null=True, blank=False)
-    # customer = models.ForeignKey('ProjectEntityTemplate',
-    #     related_name='projectentitytemplate',
+    # customer = models.ForeignKey('EntityTemplate',
+    #     related_name='entitytemplate',
     #     on_delete=models.CASCADE, blank=False, null=False)
     primary_contact = models.ForeignKey('auth.User', limit_choices_to={'is_active': True},
         # related_name='primary_contact',
