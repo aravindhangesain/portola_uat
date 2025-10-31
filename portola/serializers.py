@@ -589,11 +589,14 @@ class ProjectSerializer(serializers.HyperlinkedModelSerializer):
     last_document_date = serializers.SerializerMethodField()
 
     def get_customer_name(self, obj):
-        project_entity = ProjectEntity.objects.filter(project__id=obj.id)
-        cust_arry = []
-        for pe in project_entity:
-            cust_arry.append(pe.customer.display_name)
-        return cust_arry
+        try:
+            project_entity = ProjectEntity.objects.filter(project__id=obj.id)
+            cust_arry = []
+            for pe in project_entity:
+                cust_arry.append(pe.customer.display_name)
+            return cust_arry
+        except:
+            return []
     def get_primary_contact_user(self, obj):
         return obj.primary_contact.username
     def get_primary_contact_name(self, obj):
@@ -935,11 +938,14 @@ class ProjectTemplateSerializer(serializers.HyperlinkedModelSerializer):
     last_document_date = serializers.SerializerMethodField()
 
     def get_customer_name(self, obj):
-        project_entity = ProjectEntityTemplate.objects.filter(projecttemplate__id=obj.id)
-        cust_arry = []
-        for pe in project_entity:
-            cust_arry.append(pe.customer.display_name)
-        return cust_arry
+        try:
+            project_entity = ProjectEntityTemplate.objects.filter(projecttemplate_id=obj.id)
+            cust_arry = []
+            for pe in project_entity:
+                cust_arry.append(pe.customer.display_name)
+            return cust_arry
+        except:
+            return []
         
     def get_primary_contact_user(self, obj):
         return obj.primary_contact.username

@@ -863,6 +863,7 @@ class ProjectViewSet(DetailSerializerMixin, LoggingMixin, viewsets.ModelViewSet)
         customers = self.request.data.get('customer', []) 
         customer_ids = [
         url.rstrip('/').split('/')[-1] for url in customers]
+        print("Customer IDs:", customer_ids) 
         for customer_id in customer_ids:
             try:
                 ProjectEntity.objects.create(
@@ -874,13 +875,16 @@ class ProjectViewSet(DetailSerializerMixin, LoggingMixin, viewsets.ModelViewSet)
                 print("Error creating ProjectEntity:", e)
 
     def retrieve(self, request, *args, **kwargs):
-        project_id = kwargs.get('pk')  
-        project = Project.objects.get(id=project_id)
-        serializer = ProjectSerializer(
-            project,
-            context={'request': request}
-        )
-        return Response(serializer.data)
+        try:
+            project_id = kwargs.get('pk')  
+            project = Project.objects.get(id=project_id)
+            serializer = ProjectSerializer(
+                project,
+                context={'request': request}
+            )
+            return Response(serializer.data)
+        except:
+            return None
         
         
 
@@ -1289,6 +1293,7 @@ class ProjectTemplateViewSet(viewsets.ModelViewSet):
         customers = self.request.data.get('customer', []) 
         customer_ids = [
         url.rstrip('/').split('/')[-1] for url in customers]
+        print("CUSTOMER IDS:", customer_ids)
         for customer_id in customer_ids:
             try:
                 ProjectEntityTemplate.objects.create(
@@ -1300,13 +1305,16 @@ class ProjectTemplateViewSet(viewsets.ModelViewSet):
                 print("Error creating ProjectEntity:", e)
 
     def retrieve(self, request, *args, **kwargs):
-        project_id = kwargs.get('pk')  
-        project_template = ProjectTemplate.objects.get(id=project_id)
-        serializer = ProjectTemplateSerializer(
-            project_template,
-            context={'request': request}
-        )
-        return Response(serializer.data)
+        try:
+            project_id = kwargs.get('pk')  
+            project_template = ProjectTemplate.objects.get(id=project_id)
+            serializer = ProjectTemplateSerializer(
+                project_template,
+                context={'request': request}
+            )
+            return Response(serializer.data)
+        except:
+            return None
         
         
 
