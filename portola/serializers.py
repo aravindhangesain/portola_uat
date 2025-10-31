@@ -1088,9 +1088,10 @@ class EntityTemplateSerializer(serializers.HyperlinkedModelSerializer):
     
 class DocumentApproverSerializer(serializers.HyperlinkedModelSerializer):
     entity_display_name = serializers.ReadOnlyField(source='profile.entity.display_name')
+    username = serializers.ReadOnlyField(source='user.username')
 
     class Meta:
-        model = User
+        model = Profile
         fields = (
             'id',
             'url',

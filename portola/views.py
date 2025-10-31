@@ -607,15 +607,14 @@ class EntityViewSet(LoggingMixin, viewsets.ModelViewSet):
             result = result.filter(type__in=['PVEL','PARTNER','CLIENT'])
         return result
     
-    @action(detail=False, methods=['get'],serializer_class=DocumentApproverSerializer,)
+    @action(detail=False, methods=['get'])
     def get_users(self, request, pk=None):
         try:
             ids = request.query_params.get('ids')
             if not ids:
                 return Response({"detail": "Please provide entity IDs via ?ids=42,45"}, status=400)
             entity_ids = [int(i) for i in ids.split(',') if i.isdigit()]
-            approver_ids = ProjectEntity.objects.filter(customer_id__in=entity_ids).values_list('document_approver_id', flat=True).distinct()
-            users = User.objects.filter(id__in=approver_ids)
+            users = Profile.objects.filter(entity__in=entity_ids)
             serializer = DocumentApproverSerializer(users, many=True, context={'request': request})
             return Response(serializer.data, status=status.HTTP_200_OK)
         except Exception as e:
