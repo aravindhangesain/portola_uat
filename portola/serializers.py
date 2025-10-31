@@ -51,6 +51,7 @@ class CompanySerializer(serializers.HyperlinkedModelSerializer):
         fields =( 'name','url','website','country','bio',)
 
 class DocumentListSerializer(serializers.HyperlinkedModelSerializer):
+    project = serializers.PrimaryKeyRelatedField(read_only=True)
     # owner = serializers.ReadOnlyField(source='owner.username')
     name = serializers.SerializerMethodField()
     type_text = serializers.ReadOnlyField(source='get_type_display')
@@ -578,7 +579,7 @@ class ProjectSerializer(serializers.HyperlinkedModelSerializer):
     document_project = DocumentListSerializer(many=True, read_only=True)
     followers = serializers.SerializerMethodField()
     following = serializers.SerializerMethodField()
-    # customer_name = serializers.SerializerMethodField()
+    customer_name = serializers.SerializerMethodField()
     primary_contact_user = serializers.SerializerMethodField()
     primary_contact_name = serializers.SerializerMethodField()
     document_approver_user = serializers.SerializerMethodField()
@@ -587,8 +588,12 @@ class ProjectSerializer(serializers.HyperlinkedModelSerializer):
     pvel_manager_name = serializers.SerializerMethodField()
     last_document_date = serializers.SerializerMethodField()
 
-    # def get_customer_name(self, obj):
-    #     return obj.customer.display_name
+    def get_customer_name(self, obj):
+        project_entity = ProjectEntity.objects.filter(project__id=obj.id)
+        cust_arry = []
+        for pe in project_entity:
+            cust_arry.append(pe.customer.display_name)
+        return cust_arry
     def get_primary_contact_user(self, obj):
         return obj.primary_contact.username
     def get_primary_contact_name(self, obj):
@@ -643,7 +648,7 @@ class ProjectSerializer(serializers.HyperlinkedModelSerializer):
             'document_approver_user',
             'document_approver_name',
             # 'customer',
-            # 'customer_name',
+            'customer_name',
             'following',
             'type',
             'type_text',
@@ -920,7 +925,7 @@ class ProjectTemplateSerializer(serializers.HyperlinkedModelSerializer):
     document_project = DocumentListSerializer(many=True, read_only=True)
     # followers = serializers.SerializerMethodField()
     # following = serializers.SerializerMethodField()
-    # customer_name = serializers.SerializerMethodField()
+    customer_name = serializers.SerializerMethodField()
     primary_contact_user = serializers.SerializerMethodField()
     primary_contact_name = serializers.SerializerMethodField()
     document_approver_user = serializers.SerializerMethodField()
@@ -929,8 +934,13 @@ class ProjectTemplateSerializer(serializers.HyperlinkedModelSerializer):
     pvel_manager_name = serializers.SerializerMethodField()
     last_document_date = serializers.SerializerMethodField()
 
-    # def get_customer_name(self, obj):
-    #     return obj.customer.display_name
+    def get_customer_name(self, obj):
+        project_entity = ProjectEntityTemplate.objects.filter(projecttemplate__id=obj.id)
+        cust_arry = []
+        for pe in project_entity:
+            cust_arry.append(pe.customer.display_name)
+        return cust_arry
+        
     def get_primary_contact_user(self, obj):
         return obj.primary_contact.username
     def get_primary_contact_name(self, obj):
@@ -985,7 +995,7 @@ class ProjectTemplateSerializer(serializers.HyperlinkedModelSerializer):
             'document_approver_user',
             'document_approver_name',
             # 'customer',
-            # 'customer_name',
+            'customer_name',
             # 'following',
             'type',
             'type_text',

@@ -70,7 +70,7 @@ class ProjectFilter(filters.FilterSet):
         fields = {
             'status': ['exact'],
             'number': ['exact','in'],
-            'customer':['exact']
+            # 'customer':['exact']
         }
 
 class RequestFilter(filters.FilterSet):

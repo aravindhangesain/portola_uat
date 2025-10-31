@@ -873,6 +873,16 @@ class ProjectViewSet(DetailSerializerMixin, LoggingMixin, viewsets.ModelViewSet)
                 )
             except Exception as e:
                 print("Error creating ProjectEntity:", e)
+
+    def retrieve(self, request, *args, **kwargs):
+        project_id = kwargs.get('pk')  
+        project = Project.objects.get(id=project_id)
+        serializer = ProjectSerializer(
+            project,
+            context={'request': request}
+        )
+        return Response(serializer.data)
+        
         
 
 class PVModelViewSet(LoggingMixin, viewsets.ModelViewSet):
@@ -1289,6 +1299,17 @@ class ProjectTemplateViewSet(viewsets.ModelViewSet):
                 )
             except Exception as e:
                 print("Error creating ProjectEntity:", e)
+
+    def retrieve(self, request, *args, **kwargs):
+        project_id = kwargs.get('pk')  
+        project_template = ProjectTemplate.objects.get(id=project_id)
+        serializer = ProjectTemplateSerializer(
+            project_template,
+            context={'request': request}
+        )
+        return Response(serializer.data)
+        
+        
 
 class EntityTemplateViewSet(viewsets.ModelViewSet):
     queryset=EntityTemplate.objects.all()
