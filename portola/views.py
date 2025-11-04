@@ -1320,17 +1320,17 @@ class ProjectTemplateViewSet(viewsets.ModelViewSet):
             except Exception as e:
                 print("Error creating ProjectEntityTemplate:", e)
 
-    def retrieve(self, request, *args, **kwargs):
-        try:
-            project_id = kwargs.get('pk')  
-            project_template = ProjectTemplate.objects.get(id=project_id)
-            serializer = ProjectTemplateSerializer(
-                project_template,
-                context={'request': request}
-            )
-            return Response(serializer.data)
-        except:
-            return None
+    # def retrieve(self, request, *args, **kwargs):
+    #     try:
+    #         project_id = kwargs.get('pk')  
+    #         project_template = ProjectTemplate.objects.get(id=project_id)
+    #         serializer = ProjectTemplateSerializer(
+    #             project_template,
+    #             context={'request': request}
+    #         )
+    #         return Response(serializer.data)
+    #     except:
+    #         return None
         
         
 

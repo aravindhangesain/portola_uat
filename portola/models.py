@@ -507,6 +507,6 @@ class ProjectEntity(models.Model):
     
 class ProjectEntityTemplate(models.Model):
     projecttemplate = models.ForeignKey('ProjectTemplate', on_delete=models.CASCADE, blank=False, null=False)
-    customer = models.ForeignKey('EntityTemplate', on_delete=models.CASCADE, blank=False, null=False)
+    customer = models.ForeignKey('Entity', on_delete=models.CASCADE, blank=False, null=False)
     document_approver = models.ForeignKey('auth.User', on_delete=models.CASCADE, blank=False, null=False)
     
