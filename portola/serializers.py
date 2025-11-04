@@ -939,12 +939,14 @@ class ProjectTemplateSerializer(serializers.HyperlinkedModelSerializer):
 
     def get_customer_name(self, obj):
         try:
-            project_entity = ProjectEntityTemplate.objects.filter(projecttemplate_id=obj.id)
-            cust_arry = []
-            for pe in project_entity:
-                cust_arry.append(pe.customer.display_name)
-            return cust_arry
-        except:
+            project_entities = ProjectEntityTemplate.objects.filter(projecttemplate_id=obj.id)
+            cust_array = [
+                f"https://portolauatapi.azurewebsites.net/api/entities/{pe.customer.id}"
+                for pe in project_entities if pe.customer
+            ]
+            return cust_array
+        except Exception as e:
+            # Optional: log or print(e) for debugging
             return []
         
     def get_primary_contact_user(self, obj):
