@@ -929,6 +929,7 @@ class ProjectTemplateSerializer(serializers.HyperlinkedModelSerializer):
     # followers = serializers.SerializerMethodField()
     # following = serializers.SerializerMethodField()
     customer_name = serializers.SerializerMethodField()
+    customer = serializers.SerializerMethodField()
     primary_contact_user = serializers.SerializerMethodField()
     primary_contact_name = serializers.SerializerMethodField()
     document_approver_user = serializers.SerializerMethodField()
@@ -948,6 +949,30 @@ class ProjectTemplateSerializer(serializers.HyperlinkedModelSerializer):
         except Exception as e:
             # Optional: log or print(e) for debugging
             return []
+    
+    
+    def get_customer(self, obj):
+        try:
+            # Get all customer IDs related to this ProjectTemplate
+            customer_ids = ProjectEntityTemplate.objects.filter(
+                projecttemplate_id=obj.id
+            ).values_list('customer_id', flat=True)
+
+            # Fetch the related Entity objects
+            customers = Entity.objects.filter(id__in=customer_ids)
+
+            # Serialize them using your EntityListSerializer
+            serializer = EntityListSerializer(
+                customers,
+                many=True,
+                context={'request': self.context.get('request')}  # Pass request for proper URL resolution
+            )
+            return serializer.data
+
+        except Exception as e:
+            print(f"Error in get_customer: {e}")
+            return []
+
         
     def get_primary_contact_user(self, obj):
         return obj.primary_contact.username
@@ -1002,7 +1027,7 @@ class ProjectTemplateSerializer(serializers.HyperlinkedModelSerializer):
             'document_approver',
             'document_approver_user',
             'document_approver_name',
-            # 'customer',
+            'customer',
             'customer_name',
             # 'following',
             'type',
