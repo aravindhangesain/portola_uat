@@ -614,9 +614,25 @@ class EntityViewSet(LoggingMixin, viewsets.ModelViewSet):
             if not ids:
                 return Response({"detail": "Please provide entity IDs via ?ids=42,45"}, status=400)
             entity_ids = [int(i) for i in ids.split(',') if i.isdigit()]
+            entities = Entity.objects.filter(id__in=entity_ids)
             users = User.objects.filter(profile__entity__in=entity_ids).distinct()
-            serializer = DocumentApproverSerializer(users, many=True, context={'request': request})
-            return Response(serializer.data, status=status.HTTP_200_OK)
+            grouped = {
+                entity.id: {
+                    "customer_id": entity.id,
+                    "customer_name": entity.legal_name,
+                    "users": []
+                } 
+                for entity in entities
+            }
+            for user_obj in users:
+                entity = getattr(user_obj.profile, 'entity', None)
+                if not entity:
+                    continue
+                user_data = DocumentApproverSerializer(user_obj, context={'request': request}).data
+                if entity.id in grouped:
+                    grouped[entity.id]["users"].append(user_data)
+            result = list(grouped.values())
+            return Response(result, status=status.HTTP_200_OK)
         except Exception as e:
             return Response({"detail": str(e)},status=status.HTTP_400_BAD_REQUEST)
 
