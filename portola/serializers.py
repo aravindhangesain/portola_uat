@@ -929,6 +929,7 @@ class DocumentTemplateSerializer(serializers.HyperlinkedModelSerializer):
             'url',
             'template_title',
             'document_title',
+            'entity_id',
             'entity',
             'entity_display_name',
             'issued_date',

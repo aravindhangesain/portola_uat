@@ -908,6 +908,18 @@ class ProjectViewSet(DetailSerializerMixin, LoggingMixin, viewsets.ModelViewSet)
         except:
             return None
         
+    @action(detail=False, methods=['get'])
+    def get_projects(self,request):
+        entity_id = request.query_params.get('entity_id')
+        projectentity = ProjectEntity.objects.filter(customer_id=entity_id).values_list('project_id', flat=True)
+        projects = Project.objects.filter(id__in=projectentity)
+
+        serializer = ProjectSerializer(
+            projects,
+            many=True,
+            context={'request': request}
+        )
+        return Response(serializer.data)
         
 
 class PVModelViewSet(LoggingMixin, viewsets.ModelViewSet):
