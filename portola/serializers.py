@@ -960,6 +960,23 @@ class ProjectTemplateSerializer(serializers.HyperlinkedModelSerializer):
     last_document_date = serializers.SerializerMethodField()
     document_approver = serializers.SerializerMethodField()
     document_approver_id = serializers.SerializerMethodField()
+    custom_response = serializers.SerializerMethodField()
+
+    def get_custom_response(self, obj):
+        try:
+            project_entities = ProjectEntityTemplate.objects.filter(projecttemplate_id=obj.id)
+            result = []
+
+            for pe in project_entities:
+                result.append({
+                    "customer_id": pe.customer.id if pe.customer else None,
+                    "document_approver_id": pe.document_approver.id if pe.document_approver else None
+                })
+
+            return result
+        except Exception as e:
+            print(f"Error in get_custom_response: {e}")
+            return []
 
     def get_document_approver_id(self, obj):
         try:
@@ -1092,7 +1109,8 @@ class ProjectTemplateSerializer(serializers.HyperlinkedModelSerializer):
             'pvel_manager_name',
             # 'followers',
             'document_project',
-            'active'
+            'active',
+            'custom_response'
             )
         
 class EntityTemplateSerializer(serializers.HyperlinkedModelSerializer):
