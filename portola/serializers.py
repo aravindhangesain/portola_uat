@@ -961,6 +961,7 @@ class ProjectTemplateSerializer(serializers.HyperlinkedModelSerializer):
     document_approver = serializers.SerializerMethodField()
     document_approver_id = serializers.SerializerMethodField()
     custom_response = serializers.SerializerMethodField()
+    document_approver_details=serializers.SerializerMethodField()
 
     def get_custom_response(self, obj):
         try:
@@ -1014,6 +1015,29 @@ class ProjectTemplateSerializer(serializers.HyperlinkedModelSerializer):
             return serializer.data
         except Exception as e:
             print(f"Error in get_customer: {e}")
+            return []
+    def get_document_approver_details(self, obj):
+        try:
+            # Get lists from your existing functions
+            ids = self.get_document_approver_id(obj)
+            urls = self.get_document_approver(obj)
+            users = self.get_document_approver_user(obj)
+            names = self.get_document_approver_name(obj)
+
+            # Combine them into an array of objects
+            approvers = []
+            for approver_id, approver_url, approver_user, approver_name in zip(ids, urls, users, names):
+                approvers.append({
+                    "document_approver_id": approver_id,
+                    "document_approver": approver_url,
+                    "document_approver_user": approver_user,
+                    "document_approver_name": approver_name
+                })
+
+            return approvers
+
+        except Exception as e:
+            print("Error combining approver data:", e)
             return []
 
     def get_primary_contact_user(self, obj):
@@ -1094,6 +1118,7 @@ class ProjectTemplateSerializer(serializers.HyperlinkedModelSerializer):
             'document_approver',
             'document_approver_user',
             'document_approver_name',
+            'document_approver_details',
             'customer',
             'customer_name',
             # 'following',
