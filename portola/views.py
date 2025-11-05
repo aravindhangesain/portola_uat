@@ -875,25 +875,13 @@ class ProjectViewSet(DetailSerializerMixin, LoggingMixin, viewsets.ModelViewSet)
 
     def perform_create(self, serializer):
         instance = serializer.save()
-        document_approver = instance.document_approver
-        if hasattr(document_approver, "id"):
-            document_approver_id = document_approver.id
-        else:
-            document_approver_id = int(str(document_approver).rstrip('/').split('/')[-1])
-        customers = self.request.data.get('customer', [])
-        if isinstance(customers, str):
-            try:
-                customers = json.loads(customers)
-            except json.JSONDecodeError:
-                customers = [customers]
-        customer_ids = [url.rstrip('/').split('/')[-1] for url in customers]
-        print("CUSTOMER IDS:", customer_ids)
-        for customer_id in set(customer_ids):
+        customers = self.request.data.get('customers', [])
+        for customer in customers:
             try:
                 ProjectEntity.objects.create(
                     project_id=instance.id,
-                    customer_id=int(customer_id),
-                    document_approver_id=document_approver_id,
+                    customer_id=customer.get('customer_id'),
+                    document_approver_id=customer.get('document_approver_id'),
                 )
             except Exception as e:
                 print("Error creating ProjectEntityTemplate:", e)
@@ -1313,25 +1301,13 @@ class ProjectTemplateViewSet(viewsets.ModelViewSet):
     
     def perform_create(self, serializer):
         instance = serializer.save()
-        document_approver = instance.document_approver
-        if hasattr(document_approver, "id"):
-            document_approver_id = document_approver.id
-        else:
-            document_approver_id = int(str(document_approver).rstrip('/').split('/')[-1])
-        customers = self.request.data.get('customer', [])
-        if isinstance(customers, str):
-            try:
-                customers = json.loads(customers)
-            except json.JSONDecodeError:
-                customers = [customers]
-        customer_ids = [url.rstrip('/').split('/')[-1] for url in customers]
-        print("CUSTOMER IDS:", customer_ids)
-        for customer_id in set(customer_ids):
+        customers = self.request.data.get('customers', [])
+        for customer in customers:
             try:
                 ProjectEntityTemplate.objects.create(
                     projecttemplate_id=instance.id,
-                    customer_id=int(customer_id),
-                    document_approver_id=document_approver_id,
+                    customer_id=customer.get('customer_id'),
+                    document_approver_id=customer.get('document_approver_id'),
                 )
             except Exception as e:
                 print("Error creating ProjectEntityTemplate:", e)

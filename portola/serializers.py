@@ -587,6 +587,7 @@ class ProjectSerializer(serializers.HyperlinkedModelSerializer):
     pvel_manager_user = serializers.SerializerMethodField()
     pvel_manager_name = serializers.SerializerMethodField()
     last_document_date = serializers.SerializerMethodField()
+    document_approver = serializers.SerializerMethodField()
 
     def get_customer_name(self, obj):
         try:
@@ -595,18 +596,42 @@ class ProjectSerializer(serializers.HyperlinkedModelSerializer):
             for pe in project_entity:
                 cust_arry.append(pe.customer.display_name)
             return cust_arry
-        except:
+        except Exception as e:
             return []
     def get_primary_contact_user(self, obj):
         return obj.primary_contact.username
     def get_primary_contact_name(self, obj):
         name = '{}, {}'.format(obj.primary_contact.last_name, obj.primary_contact.first_name)
         return name
+    def get_document_approver(self, obj):
+        try:
+            project_entity = ProjectEntity.objects.filter(project__id=obj.id)
+            cust_arry = []
+            for pe in project_entity:
+                cust_arry.append(f"https://portolauatapi.azurewebsites.net/api/users/{pe.document_approver.id}")
+            return cust_arry
+        except Exception as e:
+            return []
     def get_document_approver_user(self, obj):
-        return obj.document_approver.username
+        try:
+            project_entity = ProjectEntity.objects.filter(project__id=obj.id)
+            cust_arry = []
+            for pe in project_entity:
+                cust_arry.append(pe.document_approver.username)
+            return cust_arry
+        except Exception as e:
+            return []
     def get_document_approver_name(self, obj):
-        name = '{}, {}'.format(obj.document_approver.last_name, obj.document_approver.first_name)
-        return name
+        try:
+            project_entities = ProjectEntity.objects.filter(project_id=obj.id).select_related('document_approver')
+            approver_names = []
+            for pe in project_entities:
+                if pe.document_approver:
+                    name = f"{pe.document_approver.last_name}, {pe.document_approver.first_name}"
+                    approver_names.append(name)
+            return approver_names
+        except Exception as e:
+            return []
     def get_pvel_manager_user(self, obj):
         return obj.pvel_manager.username
     def get_pvel_manager_name(self, obj):
@@ -888,7 +913,6 @@ class TokenSigninSerializer(serializers.Serializer):
 
     
 class DocumentTemplateSerializer(serializers.HyperlinkedModelSerializer):
-
     entity_display_name = serializers.ReadOnlyField(source='entity.display_name')
     project_number = serializers.ReadOnlyField(source='project.number')
     type_text = serializers.ReadOnlyField(source='get_type_display')
@@ -897,8 +921,6 @@ class DocumentTemplateSerializer(serializers.HyperlinkedModelSerializer):
         slug_field='title',
         queryset=TechnologyTag.objects.all()
     )
-    
-    
     
     class Meta:
         model=DocumentTemplate
@@ -922,7 +944,6 @@ class DocumentTemplateSerializer(serializers.HyperlinkedModelSerializer):
 
         )
 class ProjectTemplateSerializer(serializers.HyperlinkedModelSerializer):
-
     type_text = serializers.ReadOnlyField(source='get_type_display')
     document_project = serializers.PrimaryKeyRelatedField(many=True, read_only=True)
     document_project = DocumentListSerializer(many=True, read_only=True)
@@ -937,6 +958,7 @@ class ProjectTemplateSerializer(serializers.HyperlinkedModelSerializer):
     pvel_manager_user = serializers.SerializerMethodField()
     pvel_manager_name = serializers.SerializerMethodField()
     last_document_date = serializers.SerializerMethodField()
+    document_approver = serializers.SerializerMethodField()
 
     def get_customer_name(self, obj):
         try:
@@ -947,43 +969,58 @@ class ProjectTemplateSerializer(serializers.HyperlinkedModelSerializer):
             ]
             return cust_array
         except Exception as e:
-            # Optional: log or print(e) for debugging
             return []
-    
     
     def get_customer(self, obj):
         try:
-            # Get all customer IDs related to this ProjectTemplate
             customer_ids = ProjectEntityTemplate.objects.filter(
                 projecttemplate_id=obj.id
             ).values_list('customer_id', flat=True)
-
-            # Fetch the related Entity objects
             customers = Entity.objects.filter(id__in=customer_ids)
-
-            # Serialize them using your EntityListSerializer
             serializer = EntityListSerializer(
                 customers,
                 many=True,
-                context={'request': self.context.get('request')}  # Pass request for proper URL resolution
+                context={'request': self.context.get('request')}
             )
             return serializer.data
-
         except Exception as e:
             print(f"Error in get_customer: {e}")
             return []
 
-        
     def get_primary_contact_user(self, obj):
         return obj.primary_contact.username
     def get_primary_contact_name(self, obj):
         name = '{}, {}'.format(obj.primary_contact.last_name, obj.primary_contact.first_name)
         return name
+    def get_document_approver(self, obj):
+        try:
+            project_entity = ProjectEntityTemplate.objects.filter(projecttemplate__id=obj.id)
+            cust_arry = []
+            for pe in project_entity:
+                cust_arry.append(f"https://portolauatapi.azurewebsites.net/api/users/{pe.document_approver.id}")
+            return cust_arry
+        except Exception as e:
+            return []
     def get_document_approver_user(self, obj):
-        return obj.document_approver.username
+        try:
+            project_entity = ProjectEntityTemplate.objects.filter(projecttemplate__id=obj.id)
+            cust_arry = []
+            for pe in project_entity:
+                cust_arry.append(pe.document_approver.username)
+            return cust_arry
+        except Exception as e:
+            return []
     def get_document_approver_name(self, obj):
-        name = '{}, {}'.format(obj.document_approver.last_name, obj.document_approver.first_name)
-        return name
+        try:
+            project_entities = ProjectEntityTemplate.objects.filter(projecttemplate__id=obj.id).select_related('document_approver')
+            approver_names = []
+            for pe in project_entities:
+                if pe.document_approver:
+                    name = f"{pe.document_approver.last_name}, {pe.document_approver.first_name}"
+                    approver_names.append(name)
+            return approver_names
+        except Exception as e:
+            return []
     def get_pvel_manager_user(self, obj):
         return obj.pvel_manager.username
     def get_pvel_manager_name(self, obj):
