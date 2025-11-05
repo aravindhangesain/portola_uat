@@ -876,10 +876,16 @@ class ProjectViewSet(DetailSerializerMixin, LoggingMixin, viewsets.ModelViewSet)
     def perform_create(self, serializer):
         instance = serializer.save()
         customers_raw = self.request.data.get('customers', [])
-        try:
-            customers = json.loads(customers_raw)
-        except Exception as e:
-            return Response("Error parsing customers JSON:", e)
+        if isinstance(customers_raw, str):
+            try:
+                customers = json.loads(customers_raw)
+            except Exception as e:
+                return Response(
+                    {"error": f"Error parsing customers JSON: {str(e)}"},
+                    status=status.HTTP_400_BAD_REQUEST
+                )
+        else:
+            customers = customers_raw
         for customer in customers:
             try:
                 ProjectEntity.objects.create(
@@ -888,7 +894,7 @@ class ProjectViewSet(DetailSerializerMixin, LoggingMixin, viewsets.ModelViewSet)
                     document_approver_id=customer.get('document_approver_id'),
                 )
             except Exception as e:
-                return Response("Error creating ProjectEntity:", e)
+                return Response({"error": f"Error creating ProjectEntity: {str(e)}"}, status=status.HTTP_400_BAD_REQUEST)
 
     def retrieve(self, request, *args, **kwargs):
         try:
@@ -1306,10 +1312,16 @@ class ProjectTemplateViewSet(viewsets.ModelViewSet):
     def perform_create(self, serializer):
         instance = serializer.save()
         customers_raw = self.request.data.get('customers', [])
-        try:
-            customers = json.loads(customers_raw)
-        except Exception as e:
-            return Response("Error parsing customers JSON:", e)
+        if isinstance(customers_raw, str):
+            try:
+                customers = json.loads(customers_raw)
+            except Exception as e:
+                return Response(
+                    {"error": f"Error parsing customers JSON: {str(e)}"},
+                    status=status.HTTP_400_BAD_REQUEST
+                )
+        else:
+            customers = customers_raw
         for customer in customers:
             try:
                 ProjectEntityTemplate.objects.create(
@@ -1318,7 +1330,7 @@ class ProjectTemplateViewSet(viewsets.ModelViewSet):
                     document_approver_id=customer.get('document_approver_id'),
                 )
             except Exception as e:
-                return Response("Error creating ProjectEntityTemplate:", e)
+                return Response({"error": f"Error creating ProjectEntityTemplate: {str(e)}"}, status=status.HTTP_400_BAD_REQUEST)
 
     # def retrieve(self, request, *args, **kwargs):
     #     try:
