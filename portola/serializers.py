@@ -959,6 +959,18 @@ class ProjectTemplateSerializer(serializers.HyperlinkedModelSerializer):
     pvel_manager_name = serializers.SerializerMethodField()
     last_document_date = serializers.SerializerMethodField()
     document_approver = serializers.SerializerMethodField()
+    document_approver_id = serializers.SerializerMethodField()
+
+    def get_document_approver_id(self, obj):
+        try:
+            project_entities = ProjectEntityTemplate.objects.filter(projecttemplate_id=obj.id)
+            approver_ids = [
+                pe.document_approver.id
+                for pe in project_entities if pe.document_approver
+            ]
+            return approver_ids
+        except Exception as e:
+            return []
 
     def get_customer_name(self, obj):
         try:
@@ -1061,6 +1073,7 @@ class ProjectTemplateSerializer(serializers.HyperlinkedModelSerializer):
         fields = ('id','url','number','status','template_title',
             'salesforce_id',
             'name',
+            'document_approver_id',
             'document_approver',
             'document_approver_user',
             'document_approver_name',

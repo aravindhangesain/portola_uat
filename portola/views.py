@@ -875,7 +875,11 @@ class ProjectViewSet(DetailSerializerMixin, LoggingMixin, viewsets.ModelViewSet)
 
     def perform_create(self, serializer):
         instance = serializer.save()
-        customers = self.request.data.get('customers', [])
+        customers_raw = self.request.data.get('customers', [])
+        try:
+            customers = json.loads(customers_raw)
+        except Exception as e:
+            return Response("Error parsing customers JSON:", e)
         for customer in customers:
             try:
                 ProjectEntity.objects.create(
@@ -884,7 +888,7 @@ class ProjectViewSet(DetailSerializerMixin, LoggingMixin, viewsets.ModelViewSet)
                     document_approver_id=customer.get('document_approver_id'),
                 )
             except Exception as e:
-                print("Error creating ProjectEntityTemplate:", e)
+                return Response("Error creating ProjectEntity:", e)
 
     def retrieve(self, request, *args, **kwargs):
         try:
@@ -1301,7 +1305,11 @@ class ProjectTemplateViewSet(viewsets.ModelViewSet):
     
     def perform_create(self, serializer):
         instance = serializer.save()
-        customers = self.request.data.get('customers', [])
+        customers_raw = self.request.data.get('customers', [])
+        try:
+            customers = json.loads(customers_raw)
+        except Exception as e:
+            return Response("Error parsing customers JSON:", e)
         for customer in customers:
             try:
                 ProjectEntityTemplate.objects.create(
@@ -1310,7 +1318,7 @@ class ProjectTemplateViewSet(viewsets.ModelViewSet):
                     document_approver_id=customer.get('document_approver_id'),
                 )
             except Exception as e:
-                print("Error creating ProjectEntityTemplate:", e)
+                return Response("Error creating ProjectEntityTemplate:", e)
 
     # def retrieve(self, request, *args, **kwargs):
     #     try:
