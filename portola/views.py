@@ -892,6 +892,7 @@ class ProjectViewSet(DetailSerializerMixin, LoggingMixin, viewsets.ModelViewSet)
                     project_id=instance.id,
                     customer_id=customer.get('customer_id'),
                     document_approver_id=customer.get('document_approver_id'),
+                    primary_contact_id=customer.get('primary_contact_id'),
                 )
             except Exception as e:
                 return Response({"error": f"Error creating ProjectEntity: {str(e)}"}, status=status.HTTP_400_BAD_REQUEST)
