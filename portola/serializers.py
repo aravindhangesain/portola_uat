@@ -238,12 +238,12 @@ class DocumentSerializer(serializers.HyperlinkedModelSerializer):
     #     validated_data['disclosure'] = validated_data.get('disclosure','PENDING')
     #     super().create(**validated_data)
 
-    def validate(self, instance):
-        entity = instance['entity']
-        project = instance['project']
-        if entity != project.customer:
-            raise serializers.ValidationError("entity must be equal to project.entity")
-        return instance
+    # def validate(self, instance):
+    #     entity = instance['entity']
+    #     project = instance['project']
+    #     if entity != project.customer:
+    #         raise serializers.ValidationError("entity must be equal to project.entity")
+    #     return instance
 
     def to_representation(self, instance):
         """Convert `file location` to download URL."""
