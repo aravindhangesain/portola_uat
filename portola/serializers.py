@@ -580,6 +580,8 @@ class ProjectSerializer(serializers.HyperlinkedModelSerializer):
     followers = serializers.SerializerMethodField()
     following = serializers.SerializerMethodField()
     customer_name = serializers.SerializerMethodField()
+    primary_contact_id = serializers.SerializerMethodField()
+    primary_contact = serializers.SerializerMethodField()
     primary_contact_user = serializers.SerializerMethodField()
     primary_contact_name = serializers.SerializerMethodField()
     document_approver_user = serializers.SerializerMethodField()
@@ -598,11 +600,46 @@ class ProjectSerializer(serializers.HyperlinkedModelSerializer):
             return cust_arry
         except Exception as e:
             return []
+    def get_primary_contact_id(self, obj):
+        project_entities = ProjectEntity.objects.filter(projecttemplate_id=obj.id)
+        cust_array=[]
+        for project_entity in project_entities:
+            if project_entity and project_entity.primary_contact:
+                cust_array.append(project_entity.primary_contact.id)
+            else:
+                continue
+        return cust_array
+        
+    def get_primary_contact(self, obj):
+        project_entities = ProjectEntity.objects.filter(projecttemplate_id=obj.id)
+        cust_array=[]
+        for project_entity in project_entities:
+            if project_entity and project_entity.primary_contact:
+                cust_array.append(f"https://portolauatapi.azurewebsites.net/api/users/{project_entity.primary_contact.id}")
+            else:
+                continue
+        return cust_array
+
+
     def get_primary_contact_user(self, obj):
-        return obj.primary_contact.username
+        project_entities = ProjectEntity.objects.filter(projecttemplate_id=obj.id)
+        cust_array=[]
+        for project_entity in project_entities:
+            if project_entity and project_entity.primary_contact:
+                cust_array.append(project_entity.primary_contact.username)
+            else:
+                continue
+        return cust_array
+
+
     def get_primary_contact_name(self, obj):
-        name = '{}, {}'.format(obj.primary_contact.last_name, obj.primary_contact.first_name)
-        return name
+        project_entities = ProjectEntity.objects.filter(projecttemplate_id=obj.id)
+        cust_array=[]
+        for pe in project_entities:
+                if pe.primary_contact:
+                    name = f"{pe.primary_contact.last_name}, {pe.primary_contact.first_name}"
+                    cust_array.append(name)
+        return cust_array
     def get_document_approver(self, obj):
         try:
             project_entity = ProjectEntity.objects.filter(project__id=obj.id)
@@ -683,6 +720,7 @@ class ProjectSerializer(serializers.HyperlinkedModelSerializer):
             'contract_signature',
             'last_document_date',
             'primary_contact',
+            'primary_contact_id',
             'primary_contact_user',
             'primary_contact_name',
             'pvel_manager',
@@ -952,6 +990,8 @@ class ProjectTemplateSerializer(serializers.HyperlinkedModelSerializer):
     # following = serializers.SerializerMethodField()
     customer_name = serializers.SerializerMethodField()
     customer = serializers.SerializerMethodField()
+    primary_contact_id = serializers.SerializerMethodField()
+    primary_contact = serializers.SerializerMethodField()
     primary_contact_user = serializers.SerializerMethodField()
     primary_contact_name = serializers.SerializerMethodField()
     document_approver_user = serializers.SerializerMethodField()
@@ -972,7 +1012,8 @@ class ProjectTemplateSerializer(serializers.HyperlinkedModelSerializer):
             for pe in project_entities:
                 result.append({
                     "customer_id": pe.customer.id if pe.customer else None,
-                    "document_approver_id": pe.document_approver.id if pe.document_approver else None
+                    "document_approver_id": pe.document_approver.id if pe.document_approver else None,
+                    "primary_contact_id":pe.primary_contact.id if pe.primary_contact else None
                 })
 
             return result
@@ -1040,12 +1081,72 @@ class ProjectTemplateSerializer(serializers.HyperlinkedModelSerializer):
         except Exception as e:
             print("Error combining approver data:", e)
             return []
+        
+    def get_primary_contact_details(self, obj):
+        try:
+            ids = self.get_primary_contact_id(obj)
+            urls = self.get_primary_contact(obj)
+            users = self.get_primary_contact_user(obj)
+            names = self.get_primary_contact_name(obj)
+
+            # Combine them into an array of objects
+            primary_contact = []
+            for primary_contact_id, primary_contact_url, primary_contact_user, primary_contact_name in zip(ids, urls, users, names):
+                primary_contact.append({
+                    "document_approver_id": primary_contact_id,
+                    "document_approver": primary_contact_url,
+                    "document_approver_user": primary_contact_user,
+                    "document_approver_name": primary_contact_name
+                })
+
+            return primary_contact
+
+        except Exception as e:
+            print("Error combining approver data:", e)
+            return []
+
+    def get_primary_contact_id(self, obj):
+        project_entities = ProjectEntityTemplate.objects.filter(projecttemplate_id=obj.id)
+        cust_array=[]
+        for project_entity in project_entities:
+            if project_entity and project_entity.primary_contact:
+                cust_array.append(project_entity.primary_contact.id)
+            else:
+                continue
+        return cust_array
+        
+    def get_primary_contact(self, obj):
+        project_entities = ProjectEntityTemplate.objects.filter(projecttemplate_id=obj.id)
+        cust_array=[]
+        for project_entity in project_entities:
+            if project_entity and project_entity.primary_contact:
+                cust_array.append(f"https://portolauatapi.azurewebsites.net/api/users/{project_entity.primary_contact.id}")
+            else:
+                continue
+        return cust_array
+
 
     def get_primary_contact_user(self, obj):
-        return obj.primary_contact.username
+        project_entities = ProjectEntityTemplate.objects.filter(projecttemplate_id=obj.id)
+        cust_array=[]
+        for project_entity in project_entities:
+            if project_entity and project_entity.primary_contact:
+                cust_array.append(project_entity.primary_contact.username)
+            else:
+                continue
+        return cust_array
+
+
     def get_primary_contact_name(self, obj):
-        name = '{}, {}'.format(obj.primary_contact.last_name, obj.primary_contact.first_name)
-        return name
+        project_entities = ProjectEntityTemplate.objects.filter(projecttemplate_id=obj.id)
+        cust_array=[]
+        for pe in project_entities:
+                if pe.primary_contact:
+                    name = f"{pe.primary_contact.last_name}, {pe.primary_contact.first_name}"
+                    cust_array.append(name)
+        return cust_array
+            
+    
     def get_document_approver(self, obj):
         try:
             project_entity = ProjectEntityTemplate.objects.filter(projecttemplate__id=obj.id)
@@ -1127,6 +1228,7 @@ class ProjectTemplateSerializer(serializers.HyperlinkedModelSerializer):
             'type_text',
             'contract_signature',
             'last_document_date',
+            'primary_contact_id',
             'primary_contact',
             'primary_contact_user',
             'primary_contact_name',

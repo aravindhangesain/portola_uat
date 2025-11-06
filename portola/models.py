@@ -320,7 +320,7 @@ class Project(models.Model):
         on_delete=models.CASCADE, blank=True, null=True)
     primary_contact = models.ForeignKey('auth.User', limit_choices_to={'is_active': True},
         # related_name='primary_contact',
-        on_delete=models.CASCADE, blank=False, null=False)
+        on_delete=models.CASCADE, blank=True, null=True)
     # additional_contacts = multi
     pvel_manager = models.ForeignKey('auth.User', limit_choices_to={'is_staff': True}, related_name='pvel_manager', on_delete=models.CASCADE, blank=False, null=False)
     type = models.CharField(db_index=True, choices=PROJECT_CHOICES, default='MPQP', max_length=100)
@@ -462,7 +462,7 @@ class ProjectTemplate(models.Model):
     #     on_delete=models.CASCADE, blank=False, null=False)
     primary_contact = models.ForeignKey('auth.User', limit_choices_to={'is_active': True},
         # related_name='primary_contact',
-        on_delete=models.CASCADE, blank=False, null=False)
+        on_delete=models.CASCADE, blank=True, null=True)
     # additional_contacts = multi
     pvel_manager = models.ForeignKey('auth.User', limit_choices_to={'is_staff': True}, related_name='pvelmanager', on_delete=models.CASCADE, blank=False, null=False)
     type = models.CharField(db_index=True, choices=PROJECT_CHOICES, default='MPQP', max_length=100)
@@ -504,9 +504,12 @@ class ProjectEntity(models.Model):
     project = models.ForeignKey('Project', on_delete=models.CASCADE, blank=False, null=False)
     customer = models.ForeignKey('Entity', on_delete=models.CASCADE, blank=False, null=False)
     document_approver = models.ForeignKey('auth.User', on_delete=models.CASCADE, blank=False, null=False)
+    primary_contact = models.ForeignKey('auth.User', limit_choices_to={'is_active': True},related_name='primary_contact',on_delete=models.CASCADE, blank=True, null=True)
+    
     
 class ProjectEntityTemplate(models.Model):
     projecttemplate = models.ForeignKey('ProjectTemplate', on_delete=models.CASCADE, blank=False, null=False)
     customer = models.ForeignKey('Entity', on_delete=models.CASCADE, blank=False, null=False)
     document_approver = models.ForeignKey('auth.User', on_delete=models.CASCADE, blank=False, null=False)
+    primary_contact = models.ForeignKey('auth.User', limit_choices_to={'is_active': True},related_name='primary_contact_template',on_delete=models.CASCADE, blank=True, null=True)
     
