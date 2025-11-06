@@ -1228,6 +1228,7 @@ class ProjectTemplateSerializer(serializers.HyperlinkedModelSerializer):
             'type_text',
             'contract_signature',
             'last_document_date',
+            'primary_contact_details',
             'primary_contact_id',
             'primary_contact',
             'primary_contact_user',
