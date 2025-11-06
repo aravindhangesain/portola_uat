@@ -994,6 +994,7 @@ class ProjectTemplateSerializer(serializers.HyperlinkedModelSerializer):
     primary_contact = serializers.SerializerMethodField()
     primary_contact_user = serializers.SerializerMethodField()
     primary_contact_name = serializers.SerializerMethodField()
+    primary_contact_details = serializers.SerializerMethodField()
     document_approver_user = serializers.SerializerMethodField()
     document_approver_name = serializers.SerializerMethodField()
     pvel_manager_user = serializers.SerializerMethodField()
