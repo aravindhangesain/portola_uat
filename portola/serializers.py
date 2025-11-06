@@ -601,7 +601,7 @@ class ProjectSerializer(serializers.HyperlinkedModelSerializer):
         except Exception as e:
             return []
     def get_primary_contact_id(self, obj):
-        project_entities = ProjectEntity.objects.filter(projecttemplate_id=obj.id)
+        project_entities = ProjectEntity.objects.filter(project_id=obj.id)
         cust_array=[]
         for project_entity in project_entities:
             if project_entity and project_entity.primary_contact:
@@ -611,7 +611,7 @@ class ProjectSerializer(serializers.HyperlinkedModelSerializer):
         return cust_array
         
     def get_primary_contact(self, obj):
-        project_entities = ProjectEntity.objects.filter(projecttemplate_id=obj.id)
+        project_entities = ProjectEntity.objects.filter(project_id=obj.id)
         cust_array=[]
         for project_entity in project_entities:
             if project_entity and project_entity.primary_contact:
@@ -622,7 +622,7 @@ class ProjectSerializer(serializers.HyperlinkedModelSerializer):
 
 
     def get_primary_contact_user(self, obj):
-        project_entities = ProjectEntity.objects.filter(projecttemplate_id=obj.id)
+        project_entities = ProjectEntity.objects.filter(project_id=obj.id)
         cust_array=[]
         for project_entity in project_entities:
             if project_entity and project_entity.primary_contact:
@@ -633,7 +633,7 @@ class ProjectSerializer(serializers.HyperlinkedModelSerializer):
 
 
     def get_primary_contact_name(self, obj):
-        project_entities = ProjectEntity.objects.filter(projecttemplate_id=obj.id)
+        project_entities = ProjectEntity.objects.filter(project_id=obj.id)
         cust_array=[]
         for pe in project_entities:
                 if pe.primary_contact:
